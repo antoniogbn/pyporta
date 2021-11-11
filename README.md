@@ -28,7 +28,16 @@ MyPO = pyporta.PortaServer('myportaserver.local','myportauser','myportapass')
 MyPO.Connect()
 ```
 
-### Available functions
+If the authentication works, the session-ID should be returned, then you can use the methods avaiable in the library.
+
+Exemple :
+
+```
+MyPO.AddCustomer('My Porta Customer','USD')
+
+```
+
+### Available methods
 
 - Connect : Connects on PortaSwitch API Server
 - GetAccountList : Get a list of accounts from a customer;
