@@ -36,9 +36,24 @@ class PortaServer(object):
         data = self.CallAPI(req_data, 'Account/get_account_list')
         return data
 
-    def GetAccountInfo(self, id):
-        req_data = json.dumps({"id":id,"detailed_info":0})
+    def GetAccountListNoFilter(self,id="",offset=0,limit=1000,i_customer=""):
+        req_data =  json.dumps({"id":id,"i_customer":i_customer,"limit":limit,"offset":offset})
+        data = self.CallAPI(req_data, 'Account/get_account_list')
+        return data
+
+    def GetAccountInfo(self, id, detail=0):
+        req_data = json.dumps({"id":id,"detailed_info":detail})
         data = self.CallAPI(req_data,'Account/get_account_info')
+        return data
+
+    def GetAccountServicesFeatures(self, id):
+        req_data = json.dumps({"i_account":id,"detailed_info":0})
+        data = self.CallAPI(req_data,'Account/get_service_features')
+        return data
+
+    def GetAccountFollowMe(self, id):
+        req_data = json.dumps({"i_account":id})
+        data = self.CallAPI(req_data,'Account/get_account_followme')
         return data
 
     def AddAccountSipInfo(self, customer, account, bmodel, product, sipcld, sipadd, batch):
@@ -80,8 +95,48 @@ class PortaServer(object):
         data = self.CallAPI(req_data, 'Account/update_service_features')
         return data
 
+    def SetFollowMeNumber(self, i_account, redirect_number):
+        number_info = {"i_account": i_account, 'redirect_number':redirect_number}
+        req_data = json.dumps({"number_info" : number_info})
+        data = self.CallAPI(req_data,'Account/add_followme_number')
+        return data
+
+    def SetSimpleCallFwd(self, id):
+        service_features = {"flag_value": "C", "name": "forward_mode"}
+        req_data = json.dumps({"i_account" : id,"service_features": [service_features]})
+        data = self.CallAPI(req_data, 'Account/update_service_features')
+        return data
+
+    def SetDisableSimpleCallFwd(self, id):
+        service_features = {"flag_value": "N","effective_flag_value":"N", "name": "forward_mode"}
+        req_data = json.dumps({"i_account" : id,"service_features": [service_features]})
+        data = self.CallAPI(req_data, 'Account/update_service_features')
+        return data
+    
+    def SetAccountRoutePlan(self, i_account, routeplan_id):
+       account_info = {'detailed_response':0,'i_account':i_account,'service_features':[{'flag_value': "Y", 'name':'individual_routing_plan','attributes':[{'name':'i_routing_plan','values':[ routeplan_id ]}]}]} 
+       req_data = json.dumps(account_info)       
+       data = self.CallAPI(req_data,'Account/update_service_features')
+       return data
+
+    def SetAccountProduct(self, i_account, product_id):
+       account_info = {"account_info" : {'i_account':i_account,'i_product':product_id} }
+       req_data = json.dumps(account_info)       
+       data = self.CallAPI(req_data,'Account/update_account')
+       return data
+
+    def GetAccountFollowMe(self, id):
+        req_data = json.dumps({"i_account":id})
+        data = self.CallAPI(req_data,'Account/get_account_followme')
+        return data
+
+    def GetAccountServiceFeature(self,i_account):
+        req_data = json.dumps({'i_account':i_account})
+        data = self.CallAPI(req_data, 'Account/get_service_features')
+        return data                
+
     def GetCustomerInfo(self, account):
-        req_data =  json.dumps({"id": account,"detailed_info": 0, })
+        req_data =  json.dumps({"id": account,"detailed_info": 0,})
         data = self.CallAPI(req_data, 'Account/get_account_info')
         return data
 
@@ -164,7 +219,7 @@ class PortaServer(object):
         data = self.CallAPI(req_data, 'CDR/revert_xdr_list')
         return data               
 
-    def GetServiceFeatures(self,pcustomerid):
+    def GetCustomerServiceFeatures(self,pcustomerid):
         req_data = json.dumps({'i_customer':pcustomerid})
         data = self.CallAPI(req_data, 'Customer/get_service_features')
         return data                
@@ -183,3 +238,9 @@ class PortaServer(object):
         req_data = json.dumps({'i_rp_connection': prpconnectionid})
         data = self.CallAPI(req_data, 'Customer/get_service_features')
         return data                
+
+    def GetRoutePlanInfo(self,routeplan_id):
+        req_data = json.dumps({'i_routing_plan': routeplan_id})
+        data = self.CallAPI(req_data, 'RoutingPlan/get_routing_plan_info')
+        return data                
+        
